@@ -25,12 +25,6 @@ app.post('/upload', upload.single('file'), (req, res) => {
       try {
         const texto = data.text;
         console.log('Texto extraído do PDF:');
-        res.json(
-                    { paginas :data.numpages,
-                      info: data.info,
-                      texto: data.text,
-    
-                  }) 
         console.log(texto);
       } catch (error) {
         console.error('Erro ao extrair texto do PDF:', error);

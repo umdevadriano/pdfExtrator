@@ -23,17 +23,11 @@ app.post('/upload', upload.single('file'), (req, res) => {
 
     pdfData.then((data) => {
       try {
-        const texto = data.text;
-        console.log('Texto extraído do PDF:');
-        res.json(
-                    { paginas :data.numpages,
-                      info: data.info,
-                      texto: data.text,
-    
-                  }) 
-        console.log(texto);
+        const json = JSON.parse(data.text);
+        console.log('PDF convertido para JSON:');
+        console.log(json);
       } catch (error) {
-        console.error('Erro ao extrair texto do PDF:', error);
+        console.error('Erro ao converter para JSON:', error);
       }
     });
 

@@ -12,41 +12,18 @@ var folderName = 'uploads'
 // Configuração do multer para armazenamento de arquivos
 const storage = multer.memoryStorage(); // Armazena o arquivo em memória
 const upload = multer({ storage: storage });
-const pdf = require('pdf-parse');
 
 // Rota para receber o arquivo
 app.post('/upload', upload.single('file'), (req, res) => {
-  // try {
- 
+  try {
     const fileBuffer = req.file.buffer;
-    const pdfData = pdf(fileBuffer);
-
-    pdfData.then((data) => {
-      try {
-        const texto = data.text;
-        console.log('Texto extraído do PDF:');
-        res.json(
-                    { paginas :data.numpages,
-                      info: data.info,
-                      texto: data.text,
-    
-                  }) 
-        console.log(texto);
-      } catch (error) {
-        console.error('Erro ao extrair texto do PDF:', error);
-      }
-    });
-
-  //   console.log(fileBuffer)
-
-
-  //   const json = JSON.parse(fileBuffer.toString());
-  //   // Faça o que desejar com o JSON (por exemplo, salvar no banco de dados)
-  //   res.status(200).json({ message: 'Arquivo recebido e transformado em JSON com sucesso!' });
-  // } catch (error) {
-  //   console.error('Erro ao processar o arquivo:', error);
-  //   res.status(500).json({ error: 'Erro ao processar o arquivo.' });
-  // }
+    const json = JSON.parse(fileBuffer.toString());
+    // Faça o que desejar com o JSON (por exemplo, salvar no banco de dados)
+    res.status(200).json({ message: 'Arquivo recebido e transformado em JSON com sucesso!' });
+  } catch (error) {
+    console.error('Erro ao processar o arquivo:', error);
+    res.status(500).json({ error: 'Erro ao processar o arquivo.' });
+  }
 });
 
 
