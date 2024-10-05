@@ -51,6 +51,10 @@ app.post('/process',  upload.any (), (req, res) => {
     }
 });
 
+app.post('/test', (req, res) => {
+  res.send('deu tudo certo na api')
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
