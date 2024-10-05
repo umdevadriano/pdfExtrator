@@ -39,7 +39,7 @@ app.post('/upload', upload.array('file', 10), async (req, res) => {
 
       arrayInformacoes.push(info);
     } catch (error) {
-      console.error('Erro ao extrair texto do PDF:', error);
+      res.status(400).send('Erro ao extrair texto do PDF:'+error);
     }
   }
 
