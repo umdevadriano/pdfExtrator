@@ -5,14 +5,6 @@ const app = express();
 const fs = require('fs');
 const  { extractTextFromPDF, findLinesWithWords ,transformStringsToArray}  = require('./controllers/textoExtrator');
 var nomeArquivo = ''
-var folderName = 'uploads'
-
-if (!fs.existsSync(folderName)) {
-  fs.mkdirSync(folderName);
-  console.log(`Pasta "${folderName}" criada com sucesso!`);
-} else {
-  console.log(`A pasta "${folderName}" já existe.`);
-}
 // Configuração do Multer para armazenamento de arquivos
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
