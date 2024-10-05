@@ -25,9 +25,13 @@ app.post('/process',  upload.any (), (req, res) => {
   if (!req.files ) {
     return res.status(400).send('Nenhum arquivo foi enviado.');
   }
+  if (!req.body.texto ) {
+    return res.status(400).send('Nenhum texto a procurar');
+  }
     for(let i = 0 ; i < req.files.length; i++){
         caminho = `./uploads/${nomeArquivo}`
         const palavras = transformStringsToArray(req.body.texto.split(','))
+        console.log(palavras)
         
         const texto =extractTextFromPDF(caminho).then((resultado)=>{
         const encontrado = findLinesWithWords(resultado.texto,palavras)
