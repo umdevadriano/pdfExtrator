@@ -1,5 +1,6 @@
 const express = require('express');
 const multer = require('multer');
+const pdfParse = require('pdf-parse');
 const app = express();
 const fs = require('fs');
 const  { extractTextFromPDF, findLinesWithWords ,transformStringsToArray}  = require('./controllers/textoExtrator');

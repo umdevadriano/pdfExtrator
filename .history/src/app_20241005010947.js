@@ -1,29 +1,30 @@
 const express = require('express');
 const multer = require('multer');
+const pdfParse = require('pdf-parse');
 const app = express();
 const fs = require('fs');
 const  { extractTextFromPDF, findLinesWithWords ,transformStringsToArray}  = require('./controllers/textoExtrator');
 var nomeArquivo = ''
 var folderName = 'uploads'
 
-if (!fs.existsSync(folderName)) {
-  fs.mkdirSync(folderName);
-  console.log(`Pasta "${folderName}" criada com sucesso!`);
-} else {
-  console.log(`A pasta "${folderName}" já existe.`);
-}
+// if (!fs.existsSync(folderName)) {
+//   fs.mkdirSync(folderName);
+//   console.log(`Pasta "${folderName}" criada com sucesso!`);
+// } else {
+//   console.log(`A pasta "${folderName}" já existe.`);
+// }
 // // Configuração do Multer para armazenamento de arquivos
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/') // Pasta onde os PDFs serão salvos
-  },
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, 'uploads/') // Pasta onde os PDFs serão salvos
+//   },
 
-  filename: (req, file, cb) => {
-    // Manter o nome original do arquivo
-    cb(null, file.originalname); 
-    nomeArquivo = file.originalname
-  }
-});
+//   filename: (req, file, cb) => {
+//     // Manter o nome original do arquivo
+//     cb(null, file.originalname); 
+//     nomeArquivo = file.originalname
+//   }
+// });
 // const upload = multer({ storage: storage });
 
 // Rota para upload e processamento do PDF
@@ -60,6 +61,28 @@ app.post('/process',  upload.any (), (req, res) => {
         }); 
 
     }
+});
+
+app.post('/test', (req, res) => {
+  const fs = require('fs');
+const pdf = require('pdf-parse');
+
+const pdfPath = req.files // Substitua pelo caminho real do seu arquivo
+
+async function extractTextFromPDF() {
+  try {
+    const dataBuffer = fs.readFileSync(pdfPath);
+    const pdfData = await pdf(dataBuffer);
+    const texto = pdfData.text;
+    console.log('Texto extraído do PDF:');
+    console.log(texto);
+  } catch (error) {
+    console.error('Erro ao extrair texto do PDF:', error);
+  }
+}
+
+extractTextFromPDF();
+
 });
 
 const PORT = process.env.PORT || 3000;
