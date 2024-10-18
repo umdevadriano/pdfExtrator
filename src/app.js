@@ -1,12 +1,15 @@
 const express = require('express');
 const multer = require('multer');
 const app = express();
+const cors = require('cors');
 const {findLinesWithWords, transformStringsToArray } = require('./controllers/textoExtrator');
 
 // Configuração do multer para armazenamento de arquivos
 const storage = multer.memoryStorage(); // Armazena o arquivo em memória
 const upload = multer({ storage: storage });
 const pdf = require('pdf-parse');
+
+app.use(cors()); // Permite todas as origens
 
 app.post('/upload', upload.array('file', 10), async (req, res) => {
   const uploadedFiles = req.files;
