@@ -68,13 +68,10 @@ app.post('/upload-tabela', upload.single('file'), (req, res) => {
       dados[sheetName] = XLSX.utils.sheet_to_json(worksheet, { defval: null });
     });
 
-    // Gera JSON para download
-    const fileName = 'resultado.json';
     const jsonData = JSON.stringify(dados, null, 2);
-
-    res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+    res.setHeader('Content-Disposition', 'attachment; filename="resultado.json"');
     res.setHeader('Content-Type', 'application/json');
-    res.send(jsonData);
+    res.status(200).send(jsonData);
 
   } catch (error) {
     res.status(500).send('Erro ao processar o arquivo: ' + error.message);
