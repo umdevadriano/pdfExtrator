@@ -50,31 +50,37 @@ app.post('/upload', upload.array('file', 10), async (req, res) => {
   res.json(arrayInformacoes);
 });
 
-// Rota para upload de arquivo Excel e retorno dos dados em JSON
-app.post('/upload-excel', upload.single('file'), (req, res) => {
-  const file = req.file;
+// const XLSX = require('xlsx');
 
-  if (!file) {
-    return res.status(400).send('Nenhum arquivo Excel foi enviado.');
+app.post('/upload-tabela', upload.single('file'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).send('Nenhum arquivo foi enviado.');
   }
 
   try {
-    const workbook = XLSX.read(file.buffer, { type: 'buffer' });
-    const result = {};
+    const buffer = req.file.buffer;
+    const workbook = XLSX.read(buffer, { type: 'buffer' });
+
+    const dados = {};
 
     workbook.SheetNames.forEach(sheetName => {
       const worksheet = workbook.Sheets[sheetName];
-      result[sheetName] = XLSX.utils.sheet_to_json(worksheet, { defval: null });
+      dados[sheetName] = XLSX.utils.sheet_to_json(worksheet, { defval: null });
     });
 
-    res.setHeader('Content-Disposition', 'attachment; filename="dados.json"');
+    // Gera JSON para download
+    const fileName = 'resultado.json';
+    const jsonData = JSON.stringify(dados, null, 2);
+
+    res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
     res.setHeader('Content-Type', 'application/json');
-    res.send(JSON.stringify(result, null, 2));
+    res.send(jsonData);
 
   } catch (error) {
-    res.status(500).send('Erro ao processar o arquivo Excel: ' + error.message);
+    res.status(500).send('Erro ao processar o arquivo: ' + error.message);
   }
 });
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
