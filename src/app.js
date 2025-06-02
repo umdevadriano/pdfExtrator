@@ -1,5 +1,6 @@
 const express = require('express');
 const multer = require('multer');
+const XLSX = require('xlsx');
 const app = express();
 const cors = require('cors');
 const {findLinesWithWords, transformStringsToArray } = require('./controllers/textoExtrator');
@@ -47,6 +48,32 @@ app.post('/upload', upload.array('file', 10), async (req, res) => {
   }
 
   res.json(arrayInformacoes);
+});
+
+// Rota para upload de arquivo Excel e retorno dos dados em JSON
+app.post('/upload-excel', upload.single('file'), (req, res) => {
+  const file = req.file;
+
+  if (!file) {
+    return res.status(400).send('Nenhum arquivo Excel foi enviado.');
+  }
+
+  try {
+    const workbook = XLSX.read(file.buffer, { type: 'buffer' });
+    const result = {};
+
+    workbook.SheetNames.forEach(sheetName => {
+      const worksheet = workbook.Sheets[sheetName];
+      result[sheetName] = XLSX.utils.sheet_to_json(worksheet, { defval: null });
+    });
+
+    res.setHeader('Content-Disposition', 'attachment; filename="dados.json"');
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify(result, null, 2));
+
+  } catch (error) {
+    res.status(500).send('Erro ao processar o arquivo Excel: ' + error.message);
+  }
 });
 
 const PORT = process.env.PORT || 3000;
