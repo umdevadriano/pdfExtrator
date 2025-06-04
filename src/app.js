@@ -76,7 +76,7 @@ app.post('/upload-tabela', upload.single('file'), (req, res) => {
 // requisição excel json
 app.get('/upload', (req, res) => {
   try {
-    res.status(200).send(jsonData);
+    res.status(200).send("tudo certo por aqui");
 
   } catch (error) {
     res.status(500).send('Erro ao processar o arquivo: ');
