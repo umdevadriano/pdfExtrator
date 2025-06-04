@@ -11,7 +11,7 @@ const upload = multer({ storage: storage });
 const pdf = require('pdf-parse');
 
 app.use(cors()); // Permite todas as origens
-
+// requisição palavras em pdf
 app.post('/upload', upload.array('file', 10), async (req, res) => {
   const uploadedFiles = req.files;
 
@@ -50,8 +50,7 @@ app.post('/upload', upload.array('file', 10), async (req, res) => {
   res.json(arrayInformacoes);
 });
 
-// const XLSX = require('xlsx');
-
+// requisição excel json
 app.post('/upload-tabela', upload.single('file'), (req, res) => {
   if (!req.file) {
     return res.status(400).send('Nenhum arquivo foi enviado.');
@@ -65,19 +64,24 @@ app.post('/upload-tabela', upload.single('file'), (req, res) => {
 
     workbook.SheetNames.forEach(sheetName => {
       const worksheet = workbook.Sheets[sheetName];
-      dados[sheetName] = XLSX.utils.sheet_to_json(worksheet, { defval: null });
     });
 
     const jsonData = JSON.stringify(dados, null, 2);
-    res.setHeader('Content-Disposition', 'attachment; filename="resultado.json"');
-    res.setHeader('Content-Type', 'application/json');
     res.status(200).send(jsonData);
 
   } catch (error) {
     res.status(500).send('Erro ao processar o arquivo: ' + error.message);
   }
 });
+// requisição excel json
+app.get('/upload', (req, res) => {
+  try {
+    res.status(200).send(jsonData);
 
+  } catch (error) {
+    res.status(500).send('Erro ao processar o arquivo: ');
+  }
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
