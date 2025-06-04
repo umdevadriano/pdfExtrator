@@ -7,10 +7,15 @@ const {findLinesWithWords, transformStringsToArray } = require('./controllers/te
 
 // Configuração do multer para armazenamento de arquivos
 const storage = multer.memoryStorage(); // Armazena o arquivo em memória
-const upload = multer({ storage: storage });
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 100 * 1024 * 1024 } // 100MB
+});
 const pdf = require('pdf-parse');
 
 app.use(cors()); // Permite todas as origens
+app.use(express.json({ limit: '100mb' })); // tamanho do arquivo máximo
+app.use(express.urlencoded({ limit: '100mb', extended: true }));
 // requisição palavras em pdf
 app.post('/upload', upload.array('file', 10), async (req, res) => {
   const uploadedFiles = req.files;
