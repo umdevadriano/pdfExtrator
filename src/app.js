@@ -56,29 +56,51 @@ app.post('/upload', upload.array('file', 10), async (req, res) => {
 });
 
 // requisição excel json
-app.post('/upload-tabela', upload.single('file'), (req, res) => {
+app.post('/upload-tabela', upload.single('file'), async (req, res) => {
   if (!req.file) {
     return res.status(400).send('Nenhum arquivo foi enviado.');
   }
 
+  const filePath = path.resolve(req.file.path);
+  const workbook = new ExcelJS.Workbook();
+  const jsonResult = [];
+
   try {
-    const buffer = req.file.buffer;
-    const workbook = XLSX.read(buffer, { type: 'buffer' });
+    // Lê o arquivo usando stream
+    await workbook.xlsx.readFile(filePath);
+    const worksheet = workbook.worksheets[0];
 
-    const dados = {};
+    let headers = [];
 
-    workbook.SheetNames.forEach(sheetName => {
-      const worksheet = workbook.Sheets[sheetName];
+    worksheet.eachRow((row, rowNumber) => {
+      const rowValues = row.values;
+
+      // Remove o valor undefined do índice 0
+      rowValues.shift();
+
+      if (rowNumber === 1) {
+        // Cabeçalhos (primeira linha)
+        headers = rowValues;
+      } else {
+        const obj = {};
+        headers.forEach((header, index) => {
+          obj[header] = rowValues[index] !== undefined ? rowValues[index] : null;
+        });
+        jsonResult.push(obj);
+      }
     });
 
-    const jsonData = JSON.stringify(dados, null, 2);
-    res.status(200).send(jsonData);
+    // Remove o arquivo temporário
+    fs.unlinkSync(filePath);
 
-  } catch (error) {
-    res.status(500).send('Erro ao processar o arquivo: ' + error.message);
+    // Retorna todos os dados do Excel como JSON
+    res.json(jsonResult);
+  } catch (err) {
+    console.error('Erro ao processar o arquivo:', err);
+    res.status(500).send('Erro ao processar o arquivo.');
   }
 });
-// requisição excel json
+// 
 app.get('/upload', (req, res) => {
   try {
     res.status(200).send("tudo certo por aqui");
